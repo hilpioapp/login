@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ficha CNPJ — 28.376.254/0001-28</title>
+  <style>
+    :root {
+      font-family: Inter, system-ui, “Segoe UI”, Helvetica, Arial, sans-serif;
+      color: #0b1225;
+    }
+    body {
+      margin: 0;
+      background: #f4f6fb;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      width: 100%;
+      max-width: 1000px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(12,20,40,0.06);
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { margin: 0; font-size: 22px; }
+    .meta { color: #556072; font-size: 13px; }
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button.btn {
+      background: #0b63d6;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button.ghost {
+      background: #f0f6ff;
+      color: #0b63d6;
+      border: 1px solid #d6e6ff;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .main {
+      padding: 14px;
+      border-radius: 10px;
+      background: #fbfdff;
+      min-height: 400px;
+      overflow-auto: auto;
+    }
+    .side {
+      padding: 14px;
+      border-radius: 10px;
+      background: #fff8f3;
+      min-height: 400px;
+    }
+    .section {
+      margin-bottom: 14px;
+    }
+    .label {
+      font-size: 12px;
+      color: #4b5563;
+      margin-bottom: 6px;
+    }
+    .value {
+      font-size: 15px;
+      color: #0b1225;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f1724;
+      color: #dbeafe;
+      padding: 12px;
+      border-radius: 8px;
+      overflow: auto;
+    }
+    .link {
+      color: #0b63d6;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 6px;
+      border-bottom: 1px solid #eef2f7;
+      text-align: left;
+      font-size: 13px;
+    }
+    footer {
+      margin-top: 16px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+    @media (max-width: 880px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .side {
+        order: 2;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <header>
+      <div>
+        <h1 id="company-name">Carregando...</h1>
+        <div class="meta" id="company-cnpj">—</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="meta">Ficha gerada localmente</div>
+        <div style="margin-top: 6px;"><small class="meta">Fonte: dados públicos CNPJ / diretórios</small></div>
+      </div>
+    </header>
+
+    <div class="controls">
+      <button class="btn" data-action="show" data-target="overview">Visão geral</button>
+      <button class="btn ghost" data-action="show" data-target="address">Endereço</button>
+      <button class="btn" data-action="show" data-target="activities">Atividades (CNAE)</button>
+      <button class="btn ghost" data-action="show" data-target="partners">Sócios / Admin</button>
+      <button class="btn ghost" data-action="show" data-target="branches">Filiais / Relações</button>
+      <button class="btn" data-action="show" data-target="contact">Contato / Links</button>
+      <button class="btn ghost" data-action="show" data-target="raw">JSON bruto</button>
+      <button class="btn" id="btn-open-maps">Abrir no Maps</button>
+      <button class="btn ghost" id="btn-search-google">Pesquisar</button>
+    </div>
+
+    <div class="grid">
+      <div class="main" id="main-content" tabindex="0">
+        <!-- conteúdo dinâmico aparecerá aqui -->
+      </div>
+      <aside class="side">
+        <div class="section">
+          <div class="label">Situação</div>
+          <div class="value" id="quick-status">—</div>
+        </div>
+        <div class="section">
+          <div class="label">Data de Abertura</div>
+          <div class="value" id="quick-open">—</div>
+        </div>
+        <div class="section">
+          <div class="label">Capital social</div>
+          <div class="value" id="quick-capital">—</div>
+        </div>
+        <div class in="section">
+          <div class="label">Atividade principal</div>
+          <div class="value" id="quick-cnae">—</div>
+        </div>
+        <div class="section">
+          <div class="label">Contato rápido</div>
+          <div class="value" id="quick-contact">—</div>
+        </div>
+        <hr />
+        <div style="font-size:12px;color:#6b7280;">Fontes: CNPJ.biz, Casa dos Dados, Econodata, Ohub etc.</div>
+      </aside>
+    </div>
+
+    <footer>
+      <div>Você pode querer que eu modifique isso para buscar os dados por API automaticamente — posso fazer isso se desejar.</div>
+    </footer>
+  </div>
+
+  <script>
+    // ===== Dados públicos que encontrei =====
+    const companyData = {
+      cnpj: "28.376.254/0001-28",
+      razao_social: "RUDNIK COMERCIO VAREJISTA E ATACADISTA DE MAQUINAS AGRICOLAS LTDA",
+      nome_fantasia: "RUDNIK SOLUCOES E TECNOLOGIA",
+      tipo: "MATRIZ",
+      abertura: "09/08/2017",
+      situacao: "ATIVA",
+      data_situacao: "09/08/2017",
+      capital_social: "R$ 500.000,00",
+      natureza_juridica: "SOCIEDADE EMPRESÁRIA LIMITADA",
+      optante_simples: false,
+      endereco: {
+        logradouro: "Rua Brunislau Blonkovski",
+        numero: "786",
+        complemento: "",
+        bairro: "Centro",
+        municipio: "Santa Terezinha",
+        uf: "SC",
+        cep: "89199-000"
+      },
+      atividades: {
+        principal: {
+          cnae: "47.89-0-99",
+          descricao: "Comércio varejista de outros produtos não especificados anteriormente"
+        },
+        secundarias: [
+          { cnae: "27.31-7-00", descricao: "Fabricação de aparelhos e equipamentos para distribuição e controle de energia elétrica" },
+          { cnae: "43.21-5-00", descricao: "Instalação e manutenção elétrica" },
+          { cnae: "46.61-3-00", descricao: "Comércio atacadista de máquinas, aparelhos e equipamentos para uso agropecuário; partes e peças" },
+          { cnae: "46.69-9-99", descricao: "Comércio atacadista de outras máquinas e equipamentos não especificados anteriormente; partes e peças" },
+          { cnae: "46.71-1-00", descricao: "Comércio atacadista de madeira e produtos derivados" },
+          { cnae: "46.73-7-00", descricao: "Comércio atacadista de material elétrico" },
+          { cnae: "47.42-3-00", descricao: "Comércio varejista de material elétrico" },
+          { cnae: "47.44-0-01", descricao: "Comércio varejista de ferragens e ferramentas" },
+          { cnae: "47.44-0-02", descricao: "Comércio varejista de madeira e artefatos" },
+          { cnae: "49.30-2-02", descricao: "Transporte rodoviário de carga, exceto produtos perigosos e mudanças" },
+          { cnae: "73.19-0-02", descricao: "Promoção de vendas" },
+          { cnae: "73.19-0-03", descricao: "Marketing direto" },
+          { cnae: "77.40-3-00", descricao: "Gestão de ativos intangíveis não-financeiros" }
+        ]
+      },
+      socios: [
+        { nome: "ELCIO RUDNIK", qualificacao: "Sócio-Administrador", entrada: "09/08/2017" }
+      ],
+      filiais: [
+        { cnpj: "28.376.254/0002-09", tipo: "FILIAL", endereco: "Brusque, SC" },
+        { cnpj: "28.376.254/0003-90", tipo: "FILIAL", endereco: "São Bento do Sul, SC" }
+      ],
+      contato: {
+        telefone: "(47) 3556-0018",
+        email: "contato@rudniksolucoes.com.br"
+      },
+      links: {
+        mapsSearch: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Rua Brunislau Blonkovski 786, Santa Terezinha SC")}`,
+        pesquisaGoogle: `https://www.google.com/search?q=${encodeURIComponent("28.376.254/0001-28")}`,
+        consultaReceita: "https://www.gov.br/receitafederal/pt-br/servicos/cadastros"
+      },
+      ultima_atualizacao: (new Date()).toISOString().slice(0,10)
+    };
+
+    // ===== Funções de renderização =====
+    function renderOverview() {
+      return `
+      <div class="section"><div class="label">Razão social</div><div class="value">${companyData.razao_social}</div></div>
+      <div class="section"><div class="label">Nome fantasia</div><div class="value">${companyData.nome_fantasia}</div></div>
+      <div class="section"><div class="label">CNPJ</div><div class="value">${companyData.cnpj}</div></div>
+      <div class="section"><div class="label">Tipo / Situação</div><div class="value">${companyData.tipo} · ${companyData.situacao}</div></div>
+      <div class="section"><div class="label">Data de abertura</div><div class="value">${companyData.abertura}</div></div>
+      <div class="section"><div class="label">Capital social</div><div class="value">${companyData.capital_social}</div></div>
+      <div class="section"><div class="label">Natureza jurídica</div><div class="value">${companyData.natureza_juridica}</div></div>
+      <div class="section"><div class="label">Optante Simples?</div><div class="value">${companyData.optante_simples ? "Sim" : "Não"}</div></div>
+      <div class="section"><div class="label">Última atualização deste ficheiro</div><div class="value">${companyData.ultima_atualizacao}</div></div>
+      `;
+    }
+
+    function renderAddress() {
+      const e = companyData.endereco;
+      return `
+      <div class="section"><div class="label">Endereço</div><div class="value">${e.logradouro}, ${e.numero}${e.complemento ? " – " + e.complemento : ""}</div></div>
+      <div class="section"><div class="label">Bairro / Cidade</div><div class="value">${e.bairro} – ${e.municipio}/${e.uf}</div></div>
+      <div class="section"><div class="label">CEP</div><div class="value">${e.cep}</div></div>
+      <div class="section"><a class="link" href="${companyData.links.mapsSearch}" target="_blank" rel="noopener">Abrir no Google Maps</a></div>
+      `;
+    }
+
+    function renderActivities() {
+      const p = companyData.atividades.principal;
+      const secs = companyData.atividades.secundarias.map(s => `<li>${s.cnae} — ${s.descricao}</li>`).join("");
+      return `
+      <div class="section"><div class="label">Atividade principal (CNAE)</div><div class="value">${p.cnae} — ${p.descricao}</div></div>
+      <div class="section"><div class="label">Atividades secundárias</div><ul>${secs}</ul></div>
+      `;
+    }
+
+    function renderPartners() {
+      if (!companyData.socios || companyData.socios.length === 0) {
+        return `<div class="section">Nenhum sócio listado.</div>`;
+      }
+      return companyData.socios.map(s => `
+        <div class="section"><div class="label">${s.nome}</div><div class="value">${s.qualificacao} (entrada: ${s.entrada || "–"})</div></div>
+      `).join("");
+    }
+
+    function renderBranches() {
+      if (!companyData.filiais || companyData.filiais.length === 0) {
+        return `<div class="section">Nenhuma filial/matriz listada.</div>`;
+      }
+      const rows = companyData.filiais.map(f => `
+        <tr><td>${f.cnpj}</td><td>${f.tipo}</td><td>${f.endereco}</td></tr>
+      `).join("");
+      return `<div class="section"><table><thead><tr><th>CNPJ</th><th>Tipo</th><th>Endereço</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function renderContact() {
+      return `
+      <div class="section"><div class="label">Telefone</div><div class="value">${companyData.contato.telefone || "Não disponível"}</div></div>
+      <div class="section"><div class="label">E-mail</div><div class="value">${companyData.contato.email || "Não disponível"}</div></div>
+      <div class="section"><div class="label">Links úteis</div>
+        <div><a class="link" href="${companyData.links.pesquisaGoogle}" target="_blank" rel="noopener">Pesquisar no Google</a></div>
+        <div><a class="link" href="${companyData.links.consultaReceita}" target="_blank" rel="noopener">Consulta genérica Receita Federal</a></div>
+      </div>
+      `;
+    }
+
+    function renderRaw() {
+      return `<pre>${JSON.stringify(companyData, null, 2)}</pre>`;
+    }
+
+    // ===== Inicialização =====
+    document.getElementById('company-name').textContent = companyData.nome_fantasia || companyData.razao_social;
+    document.getElementById('company-cnpj').textContent = companyData.cnpj;
+
+    document.getElementById('quick-status').textContent = companyData.situacao;
+    document.getElementById('quick-open').textContent = companyData.abertura;
+    document.getElementById('quick-capital').textContent = companyData.capital_social;
+    document.getElementById('quick-cnae').textContent = `${companyData.atividades.principal.cnae} · ${companyData.atividades.principal.descricao}`;
+    document.getElementById('quick-contact').textContent = companyData.contato.telefone || "–";
+
+    const main = document.getElementById('main-content');
+    main.innerHTML = renderOverview();
+
+    document.querySelectorAll('button[data-action="show"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-target');
+        let html = "";
+        switch(target) {
+          case 'overview': html = renderOverview(); break;
+          case 'address': html = renderAddress(); break;
+          case 'activities': html = renderActivities(); break;
+          case 'partners': html = renderPartners(); break;
+          case 'branches': html = renderBranches(); break;
+          case 'contact': html = renderContact(); break;
+          case 'raw': html = renderRaw(); break;
+          default: html = "<div>Não disponível</div>";
+        }
+        main.innerHTML = html;
+        main.focus();
+      });
+    });
+
+    document.getElementById('btn-open-maps').addEventListener('click', () => {
+      window.open(companyData.links.mapsSearch, "_blank", "noopener");
+    });
+    document.getElementById('btn-search-google').addEventListener('click', () => {
+      window.open(companyData.links.pesquisaGoogle, "_blank", "noopener");
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'c') {
+        navigator.clipboard?.writeText(JSON.stringify(companyData, null, 2)).catch(() => {});
+      }
+    });
+  </script>
+</body>
+</html>
